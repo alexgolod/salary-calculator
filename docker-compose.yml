@@ -1,0 +1,44 @@
+version: "2.1"
+
+services:
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./:/var/www/project/
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d/
+    ports:
+      - "3080:80"
+    depends_on:
+      - fpm
+
+  fpm:
+    container_name: salary-calculator-fpm
+    build:
+      context: ./docker/php
+    expose:
+      - "9000"
+    volumes:
+      - ./:/var/www/project/
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: mysql://root:root@mysql:3306/salary_calculator
+
+  mysql:
+    image: mysql
+    command: ["--default-authentication-plugin=mysql_native_password"]
+    volumes:
+      - salary-calculator-mysql:/var/lib/mysql:cached
+    ports:
+      - "13316:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  salary-calculator-mysql:
