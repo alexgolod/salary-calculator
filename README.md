@@ -2,7 +2,7 @@
 It calculates employees salary by predefined rules in concrete country
 
 ## Requirements
-`docker`, `docker-compose`, `composer`
+`docker`, `docker-compose`
 
 ## Run the application
 This step will run docker containers, install composer dependencies, create database, run migrations, load the fixtures.
